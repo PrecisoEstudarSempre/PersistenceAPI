@@ -16,27 +16,31 @@ import java.util.Properties;
  * @author joao.maida
  */
 public class JDBCConnectionPool {
-    private List<Connection> connectionPool;
-    private Integer poolSize;
-    private String driver;
-    private String user;
-    private String pass;
-    private String host;
-    private String databaseName;
 
-    public JDBCConnectionPool(){
-        this.connectionPool = null;
+    private static List<Connection> connectionPool;
+    private static Integer poolSize;
+    private static String driver;
+    private static String user;
+    private static String pass;
+    private static String host;
+    private static String databaseName;
+    private static Integer timeout;
+    private static boolean isPoolAlreadyConfigured;
+
+    public JDBCConnectionPool() {
         try {
-            this.readProperties();
-            this.connectionPool = new ArrayList<>(this.poolSize);
-            this.initializeConnectionPool();
+            if(!isPoolAlreadyConfigured){
+                this.readProperties();
+                this.connectionPool = new ArrayList<>(this.poolSize);
+                this.initializeConnectionPool();
+                new TerminatePoolThread(this).start();
+            }
         } catch (PropertiesConfigurationException | SQLException ex) {
             ex.printStackTrace();
-            System.exit(1);
         }
     }
-    
-    private void readProperties() throws PropertiesConfigurationException{
+
+    private void readProperties() throws PropertiesConfigurationException {
         Properties poolProperties = new Properties();
         FileInputStream fis = null;
         try {
@@ -48,12 +52,14 @@ public class JDBCConnectionPool {
             this.driver = poolProperties.getProperty("driver");
             this.host = poolProperties.getProperty("host");
             this.databaseName = poolProperties.getProperty("databaseName");
+            this.timeout = Integer.parseInt(poolProperties.getProperty("timeout"));
+            this.isPoolAlreadyConfigured = true;
         } catch (IOException ex) {
             throw new PropertiesConfigurationException("Erro ao ler o arquivo de configuração. Arquivo inexistente ou o nome de arquivo de configuração incorreto. O nome deve ser 'database.properties'.");
-        } catch (NumberFormatException nfe){
-            throw new PropertiesConfigurationException("Erro na leitura do arquivo de configuração. O valor para o tamanho do pool deve ser um inteiro.");
-        } finally{
-            if(fis != null){
+        } catch (NumberFormatException nfe) {
+            throw new PropertiesConfigurationException("Erro na leitura do arquivo de configuração. O valor para o tamanho do pool e timeout devem ser um inteiros.");
+        } finally {
+            if (fis != null) {
                 try {
                     fis.close();
                 } catch (IOException ex) {
@@ -62,26 +68,26 @@ public class JDBCConnectionPool {
             }
         }
     }
-    
+
     private void initializeConnectionPool() throws SQLException, PropertiesConfigurationException {
         while (!checkIfConnectionPoolIsFull()) {
             connectionPool.add(createNewConnection());
         }
     }
 
-    private boolean checkIfConnectionPoolIsFull() {
+    protected boolean checkIfConnectionPoolIsFull() {
         return connectionPool.size() == this.poolSize;
     }
-    
-    private Connection createNewConnection() throws SQLException, PropertiesConfigurationException{
+
+    private Connection createNewConnection() throws SQLException, PropertiesConfigurationException {
         try {
             Class.forName(this.driver);
         } catch (ClassNotFoundException cnfe) {
-            throw new PropertiesConfigurationException("Erro na leitura do arquivo de configuração. Verifique o valor referente ao drive do banco de dados.");
+            throw new PropertiesConfigurationException("Erro na leitura do arquivo de configuração. Verifique o valor referente ao driver do banco de dados.");
         }
-        return DriverManager.getConnection(this.host+this.databaseName, this.user, this.pass);
+        return DriverManager.getConnection(this.host + this.databaseName, this.user, this.pass);
     }
-    
+
     public synchronized Connection getConnection() {
         Connection connection = null;
         if (connectionPool.size() > 0) {
@@ -97,9 +103,52 @@ public class JDBCConnectionPool {
 
     @Override
     protected void finalize() throws Throwable {
-        for(Connection connection : connectionPool){
-            connection.close();
+        try {
+            this.terminateAllConnections();
+        } finally {
+            super.finalize();
         }
-        super.finalize();
+    }
+/*
+    private void terminatePool() {
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {                
+                int timeoutCounter = 0;
+                while (true) {
+                    if (checkIfConnectionPoolIsFull()) {
+                        timeoutCounter++;
+                        if (getTimeout() == timeoutCounter) {
+                            terminateAllConnections();
+                            break;
+                        }
+                    }
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException ex) {
+                        ex.printStackTrace();
+                    }
+                }
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.run();
+    }
+*/
+    protected void terminateAllConnections() {
+        for (Connection connection : connectionPool) {
+            try {
+                connection.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * @return the timeout
+     */
+    public Integer getTimeout() {
+        return timeout;
     }
 }

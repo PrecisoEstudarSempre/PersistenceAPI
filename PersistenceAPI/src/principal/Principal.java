@@ -4,6 +4,8 @@ import dao.FuncionarioDAO;
 import entidade.Funcionario;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -72,6 +74,11 @@ public class Principal {
     }
 
     private List<Funcionario> listarFuncionarios(){
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            ex.printStackTrace();
+        }
         return new FuncionarioDAO().findAll();
     }
     
