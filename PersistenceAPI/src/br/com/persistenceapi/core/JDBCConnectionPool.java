@@ -109,32 +109,7 @@ public class JDBCConnectionPool {
             super.finalize();
         }
     }
-/*
-    private void terminatePool() {
-        Runnable runnable = new Runnable() {
-            @Override
-            public void run() {                
-                int timeoutCounter = 0;
-                while (true) {
-                    if (checkIfConnectionPoolIsFull()) {
-                        timeoutCounter++;
-                        if (getTimeout() == timeoutCounter) {
-                            terminateAllConnections();
-                            break;
-                        }
-                    }
-                    try {
-                        Thread.sleep(500);
-                    } catch (InterruptedException ex) {
-                        ex.printStackTrace();
-                    }
-                }
-            }
-        };
-        Thread thread = new Thread(runnable);
-        thread.run();
-    }
-*/
+
     protected void terminateAllConnections() {
         for (Connection connection : connectionPool) {
             try {
@@ -143,6 +118,8 @@ public class JDBCConnectionPool {
                 ex.printStackTrace();
             }
         }
+        connectionPool.clear();
+        isPoolAlreadyConfigured = false;
     }
 
     /**

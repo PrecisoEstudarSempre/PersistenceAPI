@@ -23,14 +23,16 @@ public class TerminatePoolThread extends Thread {
         System.out.println("Thread iniciada");
         int timeoutCounter = 0;
         while (true) {
+            System.out.println("executando...");
             if (jdbcConnectionPool.checkIfConnectionPoolIsFull()) {
                 timeoutCounter++;
                 if (jdbcConnectionPool.getTimeout() == timeoutCounter) {
                     jdbcConnectionPool.terminateAllConnections();
                     break;
                 }
+            } else {
+                timeoutCounter = 0;
             }
-            timeoutCounter = 0;
             System.out.println(timeoutCounter);
             try {
                 Thread.sleep(500);
