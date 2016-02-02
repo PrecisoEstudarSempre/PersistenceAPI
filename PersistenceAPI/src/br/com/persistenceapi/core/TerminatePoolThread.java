@@ -20,10 +20,9 @@ public class TerminatePoolThread extends Thread {
     @Override
     public void run() {
         super.run();
-        System.out.println("Thread iniciada");
+        System.out.println("Thread de timeout iniciada");
         int timeoutCounter = 0;
         while (true) {
-            System.out.println("executando...");
             if (jdbcConnectionPool.checkIfConnectionPoolIsFull()) {
                 timeoutCounter++;
                 if (jdbcConnectionPool.getTimeout() == timeoutCounter) {
@@ -40,6 +39,6 @@ public class TerminatePoolThread extends Thread {
                 ex.printStackTrace();
             }
         }
-        System.out.println("Thread terminada");
+        System.out.println("Thread de timeout terminada");
     }
 }

@@ -26,6 +26,7 @@ public class JDBCConnectionPool {
     private static String databaseName;
     private static Integer timeout;
     private static boolean isPoolAlreadyConfigured;
+    private static boolean isNeverTimeout;
 
     public JDBCConnectionPool() {
         try {
@@ -33,7 +34,9 @@ public class JDBCConnectionPool {
                 this.readProperties();
                 this.connectionPool = new ArrayList<>(this.poolSize);
                 this.initializeConnectionPool();
-                new TerminatePoolThread(this).start();
+                if(!isNeverTimeout){
+                    new TerminatePoolThread(this).start();
+                }
             }
         } catch (PropertiesConfigurationException | SQLException ex) {
             ex.printStackTrace();
@@ -54,6 +57,7 @@ public class JDBCConnectionPool {
             this.databaseName = poolProperties.getProperty("databaseName");
             this.timeout = Integer.parseInt(poolProperties.getProperty("timeout"));
             this.isPoolAlreadyConfigured = true;
+            this.isNeverTimeout = Boolean.valueOf(poolProperties.getProperty("neverTimeout"));
         } catch (IOException ex) {
             throw new PropertiesConfigurationException("Erro ao ler o arquivo de configuração. Arquivo inexistente ou o nome de arquivo de configuração incorreto. O nome deve ser 'database.properties'.");
         } catch (NumberFormatException nfe) {
