@@ -6,7 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- * Classe criada com a finalidade de representar um data source. Esta classe constitui uma camada intermediária entre o pool de conexões e o código cliente.
+ * Classe criada com a finalidade de representar um data source. Esta classe constitui uma camada intermediária entre o pool de conexões e o dao genérico.
  * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class DataSource {

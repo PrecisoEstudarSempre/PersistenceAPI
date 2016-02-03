@@ -8,7 +8,7 @@ package br.com.persistenceapi.core;
 public class TerminatePoolThread extends Thread {
 
     /*instância do pool*/
-    private JDBCConnectionPool jdbcConnectionPool;
+    private final JDBCConnectionPool jdbcConnectionPool;
 
     /**
      * Construtor da Thread.

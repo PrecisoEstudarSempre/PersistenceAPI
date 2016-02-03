@@ -12,12 +12,15 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- *
- * @author joao.maida
+ * Classe que representa o pool de conexões.
+ * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class JDBCConnectionPool {
 
+    /*pool*/
     private static List<Connection> connectionPool;
+    
+    /*dados do arquivo de propriedades*/
     private static Integer poolSize;
     private static String driver;
     private static String user;
@@ -25,9 +28,14 @@ public class JDBCConnectionPool {
     private static String host;
     private static String databaseName;
     private static Integer timeout;
-    private static boolean isPoolAlreadyConfigured;
     private static boolean isNeverTimeout;
 
+    /*flag para controle da leitura do arquivo de propriedades*/
+    private static boolean isPoolAlreadyConfigured;
+
+    /**
+     * Construtor da classe.
+     */
     public JDBCConnectionPool() {
         try {
             if(!isPoolAlreadyConfigured){
@@ -43,6 +51,10 @@ public class JDBCConnectionPool {
         }
     }
 
+    /**
+     * Implementação de método responsável por ler todos os dados do arquivo de propriedades.
+     * @throws PropertiesConfigurationException Representa um erro na leitura do arquivo de propriedades.
+     */
     private void readProperties() throws PropertiesConfigurationException {
         Properties poolProperties = new Properties();
         FileInputStream fis = null;
@@ -73,16 +85,31 @@ public class JDBCConnectionPool {
         }
     }
 
+    /**
+     * Implementação de método que inicializa as conexões no pool.
+     * @throws SQLException Representa um erro da criação da conexão.
+     * @throws PropertiesConfigurationException Representa um erro na leitura dos dados do arquivo.
+     */
     private void initializeConnectionPool() throws SQLException, PropertiesConfigurationException {
         while (!checkIfConnectionPoolIsFull()) {
             connectionPool.add(createNewConnection());
         }
     }
 
+    /**
+     * Implementação de método que verifica se pool de conexões está cheio ou não.
+     * @return Retorna true caso o pool esteja cheio. Caso contrário, retorna false.
+     */
     protected boolean checkIfConnectionPoolIsFull() {
         return connectionPool.size() == this.poolSize;
     }
 
+    /**
+     * Implementação de método responsável por criar uma nova conexão com a base de dados.
+     * @return Retorna a conexão criada com a base de dados.
+     * @throws SQLException Representa um erro na criação de uma conexão.
+     * @throws PropertiesConfigurationException Representa um erro na leitura dos dados do arquivo.
+     */
     private Connection createNewConnection() throws SQLException, PropertiesConfigurationException {
         try {
             Class.forName(this.driver);
@@ -92,6 +119,10 @@ public class JDBCConnectionPool {
         return DriverManager.getConnection(this.host + this.databaseName, this.user, this.pass);
     }
 
+    /**
+     * Implementação de método sincronizado para a obtenção de conexão.
+     * @return Representa a conexão retornada do pool.
+     */
     public synchronized Connection getConnection() {
         Connection connection = null;
         if (connectionPool.size() > 0) {
@@ -101,10 +132,18 @@ public class JDBCConnectionPool {
         return connection;
     }
 
+    /**
+     * Implementação de método que retorna a conexão para o pool.
+     * @param connection Representa a conexão.
+     */
     public synchronized void returnConnection(Connection connection) {
         connectionPool.add(connection);
     }
 
+    /**
+     * Método sobreescrito de Object. Este método encerra todas as conexões caso o objeto do pool seja destruído.
+     * @throws Throwable Representa qualquer exceção.
+     */
     @Override
     protected void finalize() throws Throwable {
         try {
@@ -114,6 +153,9 @@ public class JDBCConnectionPool {
         }
     }
 
+    /**
+     * Implementação de método que encerra todas as conexões.
+     */
     protected void terminateAllConnections() {
         for (Connection connection : connectionPool) {
             try {
