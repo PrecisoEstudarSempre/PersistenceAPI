@@ -6,25 +6,43 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
- *
- * @author joao.maida
+ * Classe criada com a finalidade de representar um data source. Esta classe constitui uma camada intermediária entre o pool de conexões e o código cliente.
+ * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class DataSource {
 
+    /*instância do pool*/
     private final JDBCConnectionPool pool;
 
+    /**
+     * Construtor da classe DataSource. Inicio aqui o pool de conexões.
+     */
     public DataSource(){
         this.pool = new JDBCConnectionPool();
     }
 
+    /**
+     * Obtenho a conexão disponível
+     * @return Representa a conexão.
+     * @throws SQLException Representa um erro de conexão a base de dados.
+     */
     public Connection getConnection() throws SQLException  {
         return pool.getConnection();
     }
 
+    /**
+     * Retorna a conexão ao pool.
+     * @param connection Representa a conexão.
+     */
     public void closeConnection(Connection connection) {
         pool.returnConnection(connection);
     }
     
+    /**
+     * Reliza o encerramento do statement atrelado à conexão e devolve a conexão ao pool.
+     * @param connection Representa a conexão.
+     * @param preparedStatement Representa o statement.
+     */
     public void closeConnection(Connection connection, PreparedStatement preparedStatement) {
         if(preparedStatement != null){
             try {
@@ -36,6 +54,12 @@ public class DataSource {
         this.closeConnection(connection);
     }
     
+    /**
+     * Reliza o encerramento do result set, statement e devolve a conexão ao pool.
+     * @param connection Representa a conexão.
+     * @param preparedStatement Representa o statement.
+     * @param resultSet Representa o result set.
+     */
     public void closeConnection(Connection connection, PreparedStatement preparedStatement, ResultSet resultSet){
         if(resultSet != null){
             try {
