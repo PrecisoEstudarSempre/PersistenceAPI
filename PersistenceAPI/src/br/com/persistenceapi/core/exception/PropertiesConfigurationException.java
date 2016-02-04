@@ -1,8 +1,8 @@
 package br.com.persistenceapi.core.exception;
 
 /**
- *
- * @author joao.maida
+ * Exceção que representa algum erro de leitura ou de inexistência do arquivo database.properties.
+ * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class PropertiesConfigurationException extends Exception {
 
