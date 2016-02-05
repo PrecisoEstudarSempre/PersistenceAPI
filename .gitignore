@@ -47,3 +47,4 @@ Temporary Items
 .apdisk
 /PersistenceAPI/dist/
 /PersistenceAPIClient/build/
+/PersistenceAPIClient/dist/

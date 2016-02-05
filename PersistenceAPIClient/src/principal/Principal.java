@@ -12,7 +12,7 @@ import java.util.List;
 public class Principal {
     public static void main(String[] args) {
         Principal principal = new Principal();
-        principal.inserirFuncionarios();
+//        principal.inserirFuncionarios();
         
         System.out.print("\n");
         System.out.print("\n");
@@ -76,6 +76,6 @@ public class Principal {
     }
     
     private Funcionario encontrarFuncionario(){
-        return new FuncionarioDAO().findById(1L);
+        return new FuncionarioDAO().findById(61L);
     }
 }

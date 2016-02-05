@@ -60,7 +60,7 @@ public class JDBCConnectionPool {
         Properties poolProperties = new Properties();
         FileInputStream fis = null;
         try {
-            fis = new FileInputStream(new File("database.properties"));
+            fis = new FileInputStream(new File("..//database.properties"));
             poolProperties.load(fis);
             this.poolSize = Integer.parseInt(poolProperties.getProperty("poolSize"));
             this.user = poolProperties.getProperty("user");
