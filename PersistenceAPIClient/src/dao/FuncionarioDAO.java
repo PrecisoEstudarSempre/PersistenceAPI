@@ -1,5 +1,7 @@
 package dao;
 
+import br.com.persistenceapi.core.GenericDAO;
+import br.com.persistenceapi.core.RowMapping;
 import entidade.Funcionario;
 import java.sql.ResultSet;
 import java.sql.SQLException;
