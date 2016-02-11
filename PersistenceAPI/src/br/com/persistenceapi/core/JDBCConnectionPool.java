@@ -92,6 +92,9 @@ public class JDBCConnectionPool {
      * @throws PropertiesConfigurationException Representa um erro na leitura dos dados do arquivo.
      */
     private void initializeConnectionPool() throws SQLException, PropertiesConfigurationException {
+        if(this.timeout > 60){
+            throw new PropertiesConfigurationException("Erro na inicialização do pool. O tempo de timeout está acima do permitido.");
+        }
         while (!checkIfConnectionPoolIsFull()) {
             connectionPool.add(createNewConnection());
         }
