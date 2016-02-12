@@ -56,25 +56,15 @@ public class JDBCConnectionPool {
      * Implementação de método responsável por ler todos os dados do arquivo de propriedades.
      * @throws PropertiesConfigurationException Representa um erro na leitura do arquivo de propriedades.
      */
-    private void readProperties() throws PropertiesConfigurationException {
+    private void initializeConfigurations() throws PropertiesConfigurationException {
         Properties poolProperties = new Properties();
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(new File("..//database.properties"));
             poolProperties.load(fis);
-            this.poolSize = Integer.parseInt(poolProperties.getProperty("poolSize"));
-            this.user = poolProperties.getProperty("user");
-            this.pass = poolProperties.getProperty("pass");
-            this.driver = poolProperties.getProperty("driver");
-            this.host = poolProperties.getProperty("host");
-            this.databaseName = poolProperties.getProperty("databaseName");
-            this.timeout = Integer.parseInt(poolProperties.getProperty("timeout"));
-            this.isPoolAlreadyConfigured = true;
-            this.isNeverTimeout = Boolean.valueOf(poolProperties.getProperty("neverTimeout"));
+            this.validateConfigurations(poolProperties);
         } catch (IOException ex) {
             throw new PropertiesConfigurationException("Erro ao ler o arquivo de configuração. Arquivo inexistente ou o nome de arquivo de configuração incorreto. O nome deve ser 'database.properties'.");
-        } catch (NumberFormatException nfe) {
-            throw new PropertiesConfigurationException("Erro na leitura do arquivo de configuração. O valor para o tamanho do pool e timeout devem ser um inteiros.");
         } finally {
             if (fis != null) {
                 try {
@@ -84,6 +74,65 @@ public class JDBCConnectionPool {
                 }
             }
         }
+    }
+
+    private void validateConfigurations(Properties poolProperties) throws PropertiesConfigurationException{        
+        this.isPoolAlreadyConfigured = true;
+
+        String poolSize = poolProperties.getProperty("poolSize");
+        if("".equals(poolSize)){
+            //valor default
+            this.poolSize = 10;
+        } else {
+            try {
+                this.poolSize = Integer.parseInt(poolSize);
+            } catch (NumberFormatException nfe) {
+                throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. O valor para o tamanho do pool deve ser inteiro.");
+            }
+        }
+
+        this.user = poolProperties.getProperty("user");
+        if("".equals(this.user)){
+            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Usuário do banco não especificado. Este campo é obrigatório.");
+        }
+
+        this.pass = poolProperties.getProperty("pass");
+        if("".equals(this.pass)){
+            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Senha do banco não especificada. Este campo é obrigatório.");
+        }
+
+        this.driver = poolProperties.getProperty("driver");
+        if("".equals(this.driver)){
+            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Driver do banco não especificado. Este campo é obrigatório.");
+        }
+
+        this.host = poolProperties.getProperty("host");
+        if("".equals(this.driver)){
+            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Host do banco não especificado. Este campo é obrigatório.");
+        }
+        
+        this.databaseName = poolProperties.getProperty("databaseName");
+        if("".equals(this.driver)){
+            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Nome do banco não especificado. Este campo é obrigatório.");
+        }
+        
+        String timeout = poolProperties.getProperty("timeout");
+        if("".equals(timeout)){
+            //valor default
+            this.timeout = 30;
+        } else {
+            try {
+                this.timeout = Integer.parseInt(timeout);
+            } catch (NumberFormatException nfe) {
+                throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. O valor para o timeout deve ser inteiro.");
+            }
+        }
+                
+        String neverTimeout = poolProperties.getProperty("neverTimeout");
+        if(!"true".equalsIgnoreCase(neverTimeout) && !"false".equalsIgnoreCase(neverTimeout)){
+            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. O valor para a flag deve ser 'true' ou 'false'.");
+        }
+        this.isNeverTimeout = Boolean.valueOf(neverTimeout);
     }
 
     /**
