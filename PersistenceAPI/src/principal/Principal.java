@@ -2,6 +2,7 @@ package principal;
 
 import dao.FuncionarioDAO;
 import entidade.Funcionario;
+import exception.IntegrationException;
 import java.util.Date;
 import java.util.List;
 
@@ -10,7 +11,7 @@ import java.util.List;
  * @author Preciso Estudar Sempre
  */
 public class Principal {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IntegrationException {
         Principal principal = new Principal();
 //        principal.inserirFuncionarios();
         
@@ -24,7 +25,7 @@ public class Principal {
         
         System.out.print("\n");
         System.out.print("\n");
-        System.out.println(principal.encontrarFuncionario().getNome());
+        System.out.println(principal.encontrarFuncionario().getNome());;
     }
     
     private void inserirFuncionarios(){
@@ -75,7 +76,7 @@ public class Principal {
         return new FuncionarioDAO().findAll();
     }
     
-    private Funcionario encontrarFuncionario(){
-        return new FuncionarioDAO().findById(61L);
+    private Funcionario encontrarFuncionario() throws IntegrationException{
+        return new FuncionarioDAO().findById(1L);
     }
 }

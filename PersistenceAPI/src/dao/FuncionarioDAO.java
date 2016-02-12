@@ -2,7 +2,9 @@ package dao;
 
 import br.com.persistenceapi.core.GenericDAO;
 import br.com.persistenceapi.core.RowMapping;
+import br.com.persistenceapi.core.exception.EmptyResultSetException;
 import entidade.Funcionario;
+import exception.IntegrationException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -10,7 +12,7 @@ import java.util.List;
 
 /**
  *
- * @author Preciso Estudar Sempre
+* @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class FuncionarioDAO extends GenericDAO<Funcionario>{
     
@@ -86,15 +88,15 @@ public class FuncionarioDAO extends GenericDAO<Funcionario>{
         });
     }
     
-    public Funcionario findById(Long id){
+    public Funcionario findById(Long id) throws IntegrationException{
         String sql = "SELECT * FROM FUNCIONARIO WHERE ID = ?";
         List<Object> parametros = new ArrayList<>();
         parametros.add(id);
-        return super.findById(sql, parametros, new RowMapping<Funcionario>() {
-            @Override
-            public Funcionario mapping(ResultSet resultSet) throws SQLException{
-                Funcionario funcionario = new Funcionario();
-                if(resultSet != null){
+        try {
+            return super.findById(sql, parametros, new RowMapping<Funcionario>() {
+                @Override
+                public Funcionario mapping(ResultSet resultSet) throws SQLException{
+                    Funcionario funcionario = new Funcionario();
                     funcionario.setId(resultSet.getLong("ID"));
                     funcionario.setNome(resultSet.getString("NM_FUNCIONARIO"));
                     funcionario.setEmail(resultSet.getString("EM_FUNCIONARIO"));
@@ -103,9 +105,11 @@ public class FuncionarioDAO extends GenericDAO<Funcionario>{
                     funcionario.setLogradouro(resultSet.getString("NM_LOGRADOURO"));
                     funcionario.setNumero(resultSet.getInt("NUM_LOGRADOURO"));
                     funcionario.setBairro(resultSet.getString("NM_BAIRRO"));
+                    return funcionario;
                 }
-                return funcionario;
-            }
-        });
+            });
+        } catch (EmptyResultSetException ex) {
+            throw new IntegrationException("Erro de integração com a base de dados. Consulta de dados inexistentes.", ex);
+        }
     }
 }

@@ -1,6 +1,7 @@
 package br.com.persistenceapi.core;
 
 import br.com.persistenceapi.core.exception.EmptyPoolException;
+import br.com.persistenceapi.core.exception.EmptyResultSetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -109,8 +110,9 @@ public class GenericDAO<T> extends DataSource{
      * @param parametros Representa a lista de parâmetros da query.
      * @param rowMapping Representa o mapeamento do resultado da query com os objetos de entidade.
      * @return Retorna o objeto oriundo da consulta SQL.
+     * @throws br.com.persistenceapi.core.exception.EmptyResultSetException
      */
-    public T findById(String sql, List<Object> parametros, RowMapping rowMapping){
+    public T findById(String sql, List<Object> parametros, RowMapping rowMapping) throws EmptyResultSetException{
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -121,10 +123,10 @@ public class GenericDAO<T> extends DataSource{
             preparedStatement = connection.prepareStatement(sql);
             this.receiveParameters(preparedStatement, parametros);
             resultSet = preparedStatement.executeQuery();
-            resultSet = resultSet.isBeforeFirst() ? resultSet : null;
-            if(resultSet != null){
-                resultSet.next();
+            if(!resultSet.isBeforeFirst()){
+                throw new EmptyResultSetException("A consulta SQL realizada não possui resultados.");
             }
+            resultSet.next();
             row = (T) rowMapping.mapping(resultSet);
             connection.commit();
         } catch (SQLException ex) {
