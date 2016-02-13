@@ -22,4 +22,15 @@ public class PropertiesConfigurationException extends Exception {
     public PropertiesConfigurationException(String msg) {
         super(msg);
     }
+    
+    /**
+     * Constructs an instance of <code>PropertiesConfigurationException</code>
+     * with the specified detail message and cause.
+     *
+     * @param msg the detail message.
+     * @param cause the exception cause.
+     */
+    public PropertiesConfigurationException(String msg, Throwable cause) {
+        super(msg, cause);
+    }
 }

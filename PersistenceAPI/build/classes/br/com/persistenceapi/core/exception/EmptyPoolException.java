@@ -2,7 +2,7 @@ package br.com.persistenceapi.core.exception;
 
 /**
  * Exceção que sinaliza que o pool está sem conexões disponíveis no momento.
- * @author João Paulo
+ * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class EmptyPoolException extends Exception {
 

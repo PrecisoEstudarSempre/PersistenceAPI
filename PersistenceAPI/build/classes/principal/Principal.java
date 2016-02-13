@@ -6,6 +6,8 @@ import exception.BusinessException;
 import exception.IntegrationException;
 import java.util.Date;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *

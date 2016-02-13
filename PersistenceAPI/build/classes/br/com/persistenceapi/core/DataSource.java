@@ -1,6 +1,7 @@
 package br.com.persistenceapi.core;
 
 import br.com.persistenceapi.core.exception.EmptyPoolException;
+import br.com.persistenceapi.core.exception.PoolCreationException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,8 +18,10 @@ public class DataSource {
 
     /**
      * Construtor da classe DataSource. Inicio aqui o pool de conexões.
+     * @throws br.com.persistenceapi.core.exception.PoolCreationException
      */
-    public DataSource(){
+//    public DataSource() throws PoolCreationException{
+    public DataSource() {
         this.pool = new JDBCConnectionPool();
     }
 
@@ -26,6 +29,7 @@ public class DataSource {
      * Obtenho a conexão disponível
      * @return Representa a conexão.
      * @throws SQLException Representa um erro de conexão a base de dados.
+     * @throws br.com.persistenceapi.core.exception.EmptyPoolException
      */
     public Connection getConnection() throws SQLException, EmptyPoolException  {
         return pool.getConnection();

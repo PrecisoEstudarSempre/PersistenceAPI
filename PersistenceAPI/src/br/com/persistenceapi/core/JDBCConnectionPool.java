@@ -1,6 +1,7 @@
 package br.com.persistenceapi.core;
 
 import br.com.persistenceapi.core.exception.EmptyPoolException;
+import br.com.persistenceapi.core.exception.PoolCreationException;
 import br.com.persistenceapi.core.exception.PropertiesConfigurationException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -36,11 +37,13 @@ public class JDBCConnectionPool {
 
     /**
      * Construtor da classe.
+     * @throws br.com.persistenceapi.core.exception.PoolCreationException
      */
-    public JDBCConnectionPool() {
+//    public JDBCConnectionPool() throws PoolCreationException {
+    public JDBCConnectionPool()  {
         try {
             if(!isPoolAlreadyConfigured){
-                this.readProperties();
+                this.initializeConfiguration();
                 this.connectionPool = new ArrayList<>(this.poolSize);
                 this.initializeConnectionPool();
                 if(!isNeverTimeout){
@@ -48,7 +51,7 @@ public class JDBCConnectionPool {
                 }
             }
         } catch (PropertiesConfigurationException | SQLException ex) {
-            ex.printStackTrace();
+            //throw new PoolCreationException("Erro na criação do pool.", ex);
         }
     }
 
@@ -56,26 +59,31 @@ public class JDBCConnectionPool {
      * Implementação de método responsável por ler todos os dados do arquivo de propriedades.
      * @throws PropertiesConfigurationException Representa um erro na leitura do arquivo de propriedades.
      */
-    private void initializeConfigurations() throws PropertiesConfigurationException {
+    private void initializeConfiguration() throws PropertiesConfigurationException {
         Properties poolProperties = new Properties();
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(new File("..//database.properties"));
             poolProperties.load(fis);
             this.validateConfigurations(poolProperties);
-        } catch (IOException ex) {
-            throw new PropertiesConfigurationException("Erro ao ler o arquivo de configuração. Arquivo inexistente ou o nome de arquivo de configuração incorreto. O nome deve ser 'database.properties'.");
+        } catch (IOException ioe) {
+            throw new PropertiesConfigurationException("Erro ao ler o arquivo de configuração. Arquivo inexistente ou o nome de arquivo de configuração incorreto. O nome deve ser 'database.properties'.", ioe);
         } finally {
             if (fis != null) {
                 try {
                     fis.close();
-                } catch (IOException ex) {
-                    throw new PropertiesConfigurationException("Erro ao fechar o arquivo de configuração.");
+                } catch (IOException ioe) {
+                    throw new PropertiesConfigurationException("Erro ao fechar o arquivo de configuração.", ioe);
                 }
             }
         }
     }
 
+    /**
+     * 
+     * @param poolProperties
+     * @throws PropertiesConfigurationException 
+     */
     private void validateConfigurations(Properties poolProperties) throws PropertiesConfigurationException{        
         this.isPoolAlreadyConfigured = true;
 

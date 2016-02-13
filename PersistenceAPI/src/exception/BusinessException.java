@@ -4,13 +4,13 @@ package exception;
  *
  * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
-public class IntegrationException extends Exception {
+public class BusinessException extends Exception {
 
     /**
      * Creates a new instance of <code>IntegrationException</code> without
      * detail message.
      */
-    public IntegrationException() {
+    public BusinessException() {
     }
 
     /**
@@ -19,7 +19,7 @@ public class IntegrationException extends Exception {
      *
      * @param cause the exception cause
      */
-    public IntegrationException(Throwable cause) {
+    public BusinessException(Throwable cause) {
         super(cause);
     }
     
@@ -30,7 +30,7 @@ public class IntegrationException extends Exception {
      * @param msg the detail message.
      * @param cause the exception cause
      */
-    public IntegrationException(String msg, Throwable cause) {
+    public BusinessException(String msg, Throwable cause) {
         super(msg, cause);
     }
 }

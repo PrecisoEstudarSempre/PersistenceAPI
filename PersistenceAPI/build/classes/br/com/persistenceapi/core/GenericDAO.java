@@ -1,6 +1,8 @@
 package br.com.persistenceapi.core;
 
 import br.com.persistenceapi.core.exception.EmptyPoolException;
+import br.com.persistenceapi.core.exception.EmptyResultSetException;
+import br.com.persistenceapi.core.exception.MoreThanOneResultException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -109,8 +111,12 @@ public class GenericDAO<T> extends DataSource{
      * @param parametros Representa a lista de parâmetros da query.
      * @param rowMapping Representa o mapeamento do resultado da query com os objetos de entidade.
      * @return Retorna o objeto oriundo da consulta SQL.
+     * @throws br.com.persistenceapi.core.exception.EmptyResultSetException
+     * @throws br.com.persistenceapi.core.exception.MoreThanOneResultException
+     * @throws br.com.persistenceapi.core.exception.EmptyPoolException
+     * @throws java.sql.SQLException
      */
-    public T findById(String sql, List<Object> parametros, RowMapping rowMapping){
+    public T findById(String sql, List<Object> parametros, RowMapping rowMapping) throws EmptyResultSetException, MoreThanOneResultException, EmptyPoolException, SQLException{
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
@@ -121,23 +127,19 @@ public class GenericDAO<T> extends DataSource{
             preparedStatement = connection.prepareStatement(sql);
             this.receiveParameters(preparedStatement, parametros);
             resultSet = preparedStatement.executeQuery();
-            resultSet = resultSet.isBeforeFirst() ? resultSet : null;
-            if(resultSet != null){
-                resultSet.next();
+            if(!resultSet.isBeforeFirst()){
+                throw new EmptyResultSetException("A consulta SQL realizada não possui resultados.");
             }
+            resultSet.last();
+            if(resultSet.getRow() > 1){
+                throw new MoreThanOneResultException("A consulta SQL retorna mais de um resultado.");
+            }
+            resultSet.first();
+            resultSet.next();// avaliar se é necessário
             row = (T) rowMapping.mapping(resultSet);
             connection.commit();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            if(connection != null){
-                try {
-                    connection.rollback();
-                } catch (SQLException sqle) {
-                    sqle.printStackTrace();
-                }
-            }
-        } catch (EmptyPoolException ex) {
-            ex.printStackTrace();
+        } catch (SQLException | EmptyPoolException ex) {
+            throw ex;
         } finally {
             this.closeConnection(connection, preparedStatement, resultSet);
         }
