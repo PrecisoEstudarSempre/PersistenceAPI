@@ -1,8 +1,8 @@
 package br.com.persistenceapi.core.exception;
 
 /**
- *
- * @author João Paulo
+ * Exceção que representa que uma consulta SQL retornou mais de um registro.
+ * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class MoreThanOneResultException extends Exception {
 

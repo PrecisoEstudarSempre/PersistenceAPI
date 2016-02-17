@@ -1,7 +1,7 @@
 package br.com.persistenceapi.core.exception;
 
 /**
- *
+ * Exceção que representa algum erro na criação do pool.
  * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class PoolCreationException extends Exception {
