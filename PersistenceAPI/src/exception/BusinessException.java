@@ -1,7 +1,7 @@
 package exception;
 
 /**
- *
+ * Exceção que representa um erro de negócio.
  * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class BusinessException extends Exception {

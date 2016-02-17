@@ -1,7 +1,7 @@
 package exception;
 
 /**
- *
+ * Exceção que representa um erro de integração.
  * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class IntegrationException extends Exception {
