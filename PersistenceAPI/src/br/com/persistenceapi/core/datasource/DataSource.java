@@ -17,8 +17,7 @@ public class DataSource {
     private final JDBCConnectionPool pool;
 
     /**
-     * Construtor da classe DataSource. Inicio aqui o pool de conexões.
-     * @throws br.com.persistenceapi.core.exception.PoolCreationException
+     * Construtor da classe DataSource. Inicializa o pool de conexões.     
      */
     public DataSource() {
         try{
@@ -29,10 +28,10 @@ public class DataSource {
     }
 
     /**
-     * Obtenho a conexão disponível
+     * Obtém uma conexão disponível do pool.
      * @return Representa a conexão.
      * @throws SQLException Representa um erro de conexão a base de dados.
-     * @throws br.com.persistenceapi.core.exception.EmptyPoolException
+     * @throws br.com.persistenceapi.core.exception.EmptyPoolException Representa o momento em que o pool não possui conexões disponíveis.
      */
     public Connection getConnection() throws SQLException, EmptyPoolException  {
         return pool.getConnection();

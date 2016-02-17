@@ -19,6 +19,9 @@ public class GenericDAO<T>{
 
     private DataSource dataSource;
 
+    /**
+     * Construtor da classe. Inicializa o data source.
+     */
     public GenericDAO(){
         dataSource = new DataSource();
     }
@@ -27,8 +30,8 @@ public class GenericDAO<T>{
      * Implementação de método que é responsável por realizar as operações de escrita (insert, update, delete) no banco de dados.
      * @param sql Representa a string sql.
      * @param parametros Representa a lista de parâmetros da query.
-     * @throws br.com.persistenceapi.core.exception.EmptyPoolException
-     * @throws java.sql.SQLException
+     * @throws br.com.persistenceapi.core.exception.EmptyPoolException Representa o momento em que o pool não possui conexões disponíveis.
+     * @throws java.sql.SQLException Representa algum erro de SQL ou de conexão.
      */
     public void insertUpdateDelete(String sql, List<Object> parametros) throws EmptyPoolException, SQLException{
         Connection connection = null;
@@ -56,7 +59,7 @@ public class GenericDAO<T>{
      * Implementação de método que é responsável por receber os parâmetros, avaliar se algum deles é nulo e configurá-los no statement.
      * @param preparedStatement Representa o statement oriundo da query.
      * @param parametros Representa a lista de parâmetros da query.
-     * @throws SQLException
+     * @throws SQLException Representa algum erro da atribuição dos parâmetros da query ao statement.
      */
     private void receiveParameters(PreparedStatement preparedStatement, List<Object> parametros) throws SQLException{
         int paramPos = 1;
@@ -75,10 +78,10 @@ public class GenericDAO<T>{
      * @param sql Representa a query a ser executada.
      * @param parametros Representa a lista de parâmetros da query.
      * @param rowMapping Representa o mapeamento do resultado da query com os objetos de entidade.
-     * @return Retorna uma lista de objetos oriundos da consulta SQL.
-     * @throws java.sql.SQLException
-     * @throws br.com.persistenceapi.core.exception.EmptyPoolException
-     * @throws br.com.persistenceapi.core.exception.EmptyResultSetException
+     * @return Retorna uma lista genérica de objetos oriundos da consulta SQL.
+     * @throws java.sql.SQLException Representa algum erro de SQL ou de conexão.
+     * @throws br.com.persistenceapi.core.exception.EmptyPoolException Representa o momento em que o pool não possui conexões disponíveis.
+     * @throws br.com.persistenceapi.core.exception.EmptyResultSetException Representa que a consulta realizada não retornou nenhum dado.
      */
     public List<T> findAll(String sql, List<Object> parametros, RowMapping rowMapping) throws SQLException, EmptyPoolException, EmptyResultSetException{
         Connection connection = null;
@@ -111,11 +114,11 @@ public class GenericDAO<T>{
      * @param sql Representa a query a ser executada.
      * @param parametros Representa a lista de parâmetros da query.
      * @param rowMapping Representa o mapeamento do resultado da query com os objetos de entidade.
-     * @return Retorna o objeto oriundo da consulta SQL.
-     * @throws br.com.persistenceapi.core.exception.EmptyResultSetException
-     * @throws br.com.persistenceapi.core.exception.MoreThanOneResultException
-     * @throws br.com.persistenceapi.core.exception.EmptyPoolException
-     * @throws java.sql.SQLException
+     * @return Retorna o objeto genérico oriundo da consulta SQL.
+     * @throws br.com.persistenceapi.core.exception.EmptyResultSetException Representa que a consulta realizada não retornou nenhum dado.
+     * @throws br.com.persistenceapi.core.exception.MoreThanOneResultException Representa que a consulta realizada retornou mais de um registro.
+     * @throws br.com.persistenceapi.core.exception.EmptyPoolException Representa o momento em que o pool não possui conexões disponíveis.
+     * @throws java.sql.SQLException Representa algum erro de SQL ou de conexão.
      */
     public T findById(String sql, List<Object> parametros, RowMapping rowMapping) throws EmptyResultSetException, MoreThanOneResultException, EmptyPoolException, SQLException{
         Connection connection = null;

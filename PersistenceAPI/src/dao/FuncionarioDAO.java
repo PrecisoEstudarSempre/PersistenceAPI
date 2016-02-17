@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Classe DAO da entidade Funcionario.
+ * Classe cliente DAO da entidade Funcionario.
  * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class FuncionarioDAO extends GenericDAO<Funcionario>{
