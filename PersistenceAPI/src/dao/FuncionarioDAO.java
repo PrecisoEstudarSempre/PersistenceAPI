@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Classe DAO da entidade Funcionario.
  * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  */
 public class FuncionarioDAO extends GenericDAO<Funcionario>{
@@ -69,26 +69,32 @@ public class FuncionarioDAO extends GenericDAO<Funcionario>{
         super.insertUpdateDelete(sql, parametros);
     }
     
-    public List<Funcionario> findAll(){
+    public List<Funcionario> findAll() throws IntegrationException, BusinessException{
         String sql = "SELECT * FROM FUNCIONARIO";
         List<Object> parametros = new ArrayList<>();
-        return super.findAll(sql, parametros, new RowMapping<Funcionario>() {
-            @Override
-            public Funcionario mapping(ResultSet resultSet) throws SQLException{
-                Funcionario funcionario = new Funcionario();
-                if(resultSet != null){
-                    funcionario.setId(resultSet.getLong("ID"));
-                    funcionario.setNome(resultSet.getString("NM_FUNCIONARIO"));
-                    funcionario.setEmail(resultSet.getString("EM_FUNCIONARIO"));
-                    funcionario.setDataNascimento(resultSet.getDate("DT_NASCIMENTO_FUNCIONARIO"));
-                    funcionario.setMatricula(resultSet.getString("MAT_FUNCIONARIO"));
-                    funcionario.setLogradouro(resultSet.getString("NM_LOGRADOURO"));
-                    funcionario.setNumero(resultSet.getInt("NUM_LOGRADOURO"));
-                    funcionario.setBairro(resultSet.getString("NM_BAIRRO"));
+        try{
+            return super.findAll(sql, parametros, new RowMapping<Funcionario>() {
+                @Override
+                public Funcionario mapping(ResultSet resultSet) throws SQLException{
+                    Funcionario funcionario = new Funcionario();
+                    if(resultSet != null){
+                        funcionario.setId(resultSet.getLong("ID"));
+                        funcionario.setNome(resultSet.getString("NM_FUNCIONARIO"));
+                        funcionario.setEmail(resultSet.getString("EM_FUNCIONARIO"));
+                        funcionario.setDataNascimento(resultSet.getDate("DT_NASCIMENTO_FUNCIONARIO"));
+                        funcionario.setMatricula(resultSet.getString("MAT_FUNCIONARIO"));
+                        funcionario.setLogradouro(resultSet.getString("NM_LOGRADOURO"));
+                        funcionario.setNumero(resultSet.getInt("NUM_LOGRADOURO"));
+                        funcionario.setBairro(resultSet.getString("NM_BAIRRO"));
+                    }
+                    return funcionario;
                 }
-                return funcionario;
-            }
-        });
+            });
+        } catch (EmptyPoolException | SQLException ex) {
+            throw new IntegrationException("Erro de integração com a base de dados.", ex);
+        } catch (EmptyResultSetException ex) {
+            throw new BusinessException(ex);
+        }
     }
     
     public Funcionario findById(Long id) throws IntegrationException, BusinessException{

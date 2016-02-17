@@ -20,9 +20,12 @@ public class DataSource {
      * Construtor da classe DataSource. Inicio aqui o pool de conexões.
      * @throws br.com.persistenceapi.core.exception.PoolCreationException
      */
-//    public DataSource() throws PoolCreationException{
     public DataSource() {
-        this.pool = new JDBCConnectionPool();
+        try{
+            this.pool = new JDBCConnectionPool();
+        } catch (PoolCreationException pce){
+            pce.printStackTrace();
+        }
     }
 
     /**

@@ -35,12 +35,13 @@ public class JDBCConnectionPool {
     /*flag para controle da leitura do arquivo de propriedades*/
     private static boolean isPoolAlreadyConfigured;
 
+    private final String MSG_PROPERTY_CONFIGURATION_EXCEPTION = "Erro ao realizar a configuração do pool.";
+
     /**
      * Construtor da classe.
-     * @throws br.com.persistenceapi.core.exception.PoolCreationException
+     * @throws br.com.persistenceapi.core.exception.PoolCreationException Representa um erro de criação do pool.
      */
-//    public JDBCConnectionPool() throws PoolCreationException {
-    public JDBCConnectionPool()  {
+    public JDBCConnectionPool() throws PoolCreationException {    
         try {
             if(!isPoolAlreadyConfigured){
                 this.initializeConfiguration();
@@ -51,13 +52,13 @@ public class JDBCConnectionPool {
                 }
             }
         } catch (PropertiesConfigurationException | SQLException ex) {
-            //throw new PoolCreationException("Erro na criação do pool.", ex);
+            throw new PoolCreationException("Erro na criação do pool.", ex);
         }
     }
 
     /**
      * Implementação de método responsável por ler todos os dados do arquivo de propriedades.
-     * @throws PropertiesConfigurationException Representa um erro na leitura do arquivo de propriedades.
+     * @throws PropertiesConfigurationException Representa um erro na leitura do arquivo de propriedades. Este erro pode ser ocasionado pela ausência do arquivo, nome de arquivo incorreto ou algum erro de I/O no fechamento do arquivo.
      */
     private void initializeConfiguration() throws PropertiesConfigurationException {
         Properties poolProperties = new Properties();
@@ -80,9 +81,10 @@ public class JDBCConnectionPool {
     }
 
     /**
-     * 
-     * @param poolProperties
-     * @throws PropertiesConfigurationException 
+     * Realiza a validação dos dados oriundos do arquivo de propriedades.
+     * @param poolProperties Representa o arquivo de propriedades.
+     * @throws PropertiesConfigurationException Representa um erro na configuração, exemplos: ausência de dados obrigatórios, 
+     * dados em formatos incorretos, valores abaixo ou acima do permitido.
      */
     private void validateConfigurations(Properties poolProperties) throws PropertiesConfigurationException{        
         this.isPoolAlreadyConfigured = true;
@@ -95,33 +97,38 @@ public class JDBCConnectionPool {
             try {
                 this.poolSize = Integer.parseInt(poolSize);
             } catch (NumberFormatException nfe) {
-                throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. O valor para o tamanho do pool deve ser inteiro.");
+                throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + " O valor para o tamanho do pool deve ser inteiro.");
+            }
+
+            if(this.poolSize > 30 || this.poolSize < 10){
+                throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + 
+                    " Tamanho do pool acima ou abaixo do permitido. O tamanho do pool deve estar entre 10 e 30, inclusive.");
             }
         }
 
         this.user = poolProperties.getProperty("user");
         if("".equals(this.user)){
-            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Usuário do banco não especificado. Este campo é obrigatório.");
+            throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + " Usuário do banco não especificado. Este campo é obrigatório.");
         }
 
         this.pass = poolProperties.getProperty("pass");
         if("".equals(this.pass)){
-            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Senha do banco não especificada. Este campo é obrigatório.");
+            throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + " Senha do banco não especificada. Este campo é obrigatório.");
         }
 
         this.driver = poolProperties.getProperty("driver");
         if("".equals(this.driver)){
-            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Driver do banco não especificado. Este campo é obrigatório.");
+            throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + " Driver do banco não especificado. Este campo é obrigatório.");
         }
 
         this.host = poolProperties.getProperty("host");
         if("".equals(this.driver)){
-            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Host do banco não especificado. Este campo é obrigatório.");
+            throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + " Host do banco não especificado. Este campo é obrigatório.");
         }
         
         this.databaseName = poolProperties.getProperty("databaseName");
         if("".equals(this.driver)){
-            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. Nome do banco não especificado. Este campo é obrigatório.");
+            throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + " Nome do banco não especificado. Este campo é obrigatório.");
         }
         
         String timeout = poolProperties.getProperty("timeout");
@@ -132,15 +139,20 @@ public class JDBCConnectionPool {
             try {
                 this.timeout = Integer.parseInt(timeout);
             } catch (NumberFormatException nfe) {
-                throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. O valor para o timeout deve ser inteiro.");
+                throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + " O valor para o timeout deve ser inteiro.");
             }
         }
                 
         String neverTimeout = poolProperties.getProperty("neverTimeout");
         if(!"true".equalsIgnoreCase(neverTimeout) && !"false".equalsIgnoreCase(neverTimeout)){
-            throw new PropertiesConfigurationException("Erro ao realizar a configuração do pool. O valor para a flag deve ser 'true' ou 'false'.");
+            throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + " O valor para a flag deve ser 'true' ou 'false'.");
         }
         this.isNeverTimeout = Boolean.valueOf(neverTimeout);
+
+        if(!this.isNeverTimeout && (this.timeout > 60 || this.timeout < 10)){
+            throw new PropertiesConfigurationException(MSG_PROPERTY_CONFIGURATION_EXCEPTION + 
+                " O tempo de timeout acima ou abaixo do permitido. O intervalo de tempo deve estar entre 10 e 60 segundos, inclusive.");
+        }
     }
 
     /**
@@ -149,9 +161,6 @@ public class JDBCConnectionPool {
      * @throws PropertiesConfigurationException Representa um erro na leitura dos dados do arquivo.
      */
     private void initializeConnectionPool() throws SQLException, PropertiesConfigurationException {
-        if(!this.isNeverTimeout && this.timeout > 60){
-            throw new PropertiesConfigurationException("Erro na inicialização do pool. O tempo de timeout está acima do permitido.");
-        }
         while (!checkIfConnectionPoolIsFull()) {
             connectionPool.add(createNewConnection());
         }
@@ -169,7 +178,7 @@ public class JDBCConnectionPool {
      * Implementação de método responsável por criar uma nova conexão com a base de dados.
      * @return Retorna a conexão criada com a base de dados.
      * @throws SQLException Representa um erro na criação de uma conexão.
-     * @throws PropertiesConfigurationException Representa um erro na leitura dos dados do arquivo.
+     * @throws PropertiesConfigurationException Representa um erro no driver de banco especificado.
      */
     private Connection createNewConnection() throws SQLException, PropertiesConfigurationException {
         try {

@@ -15,7 +15,13 @@ import java.util.List;
  * @author Preciso Estudar Sempre - precisoestudarsempre@gmail.com
  * @param <T> Notação genérica da classe
  */
-public class GenericDAO<T> extends DataSource{
+public class GenericDAO<T>{
+
+    private DataSource dataSource;
+
+    public GenericDAO(){
+        dataSource = new DataSource();
+    }
 
     /**
      * Implementação de método que é responsável por realizar as operações de escrita (insert, update, delete) no banco de dados.
@@ -28,7 +34,7 @@ public class GenericDAO<T> extends DataSource{
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         try {
-            connection = super.getConnection();
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             this.receiveParameters(preparedStatement, parametros);
@@ -72,18 +78,22 @@ public class GenericDAO<T> extends DataSource{
      * @return Retorna uma lista de objetos oriundos da consulta SQL.
      * @throws java.sql.SQLException
      * @throws br.com.persistenceapi.core.exception.EmptyPoolException
+     * @throws br.com.persistenceapi.core.exception.EmptyResultSetException
      */
-    public List<T> findAll(String sql, List<Object> parametros, RowMapping rowMapping) throws SQLException, EmptyPoolException{
+    public List<T> findAll(String sql, List<Object> parametros, RowMapping rowMapping) throws SQLException, EmptyPoolException, EmptyResultSetException{
         Connection connection = null;
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
         List<T> rows = new ArrayList();
         try {
-            connection = this.getConnection();
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             this.receiveParameters(preparedStatement, parametros);
             resultSet = preparedStatement.executeQuery();
+            if(!resultSet.isBeforeFirst()){
+                throw new EmptyResultSetException("A consulta SQL realizada não possui resultados.");
+            }
             while(resultSet.next()){
                 rows.add((T) rowMapping.mapping(resultSet));
             }           
@@ -113,7 +123,7 @@ public class GenericDAO<T> extends DataSource{
         ResultSet resultSet = null;
         T row = null;
         try {
-            connection = this.getConnection();
+            connection = dataSource.getConnection();
             connection.setAutoCommit(false);
             preparedStatement = connection.prepareStatement(sql);
             this.receiveParameters(preparedStatement, parametros);
