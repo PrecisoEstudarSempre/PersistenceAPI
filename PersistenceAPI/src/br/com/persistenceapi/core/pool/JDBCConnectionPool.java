@@ -1,4 +1,4 @@
-package br.com.persistenceapi.core;
+package br.com.persistenceapi.core.pool;
 
 import br.com.persistenceapi.core.exception.EmptyPoolException;
 import br.com.persistenceapi.core.exception.PoolCreationException;

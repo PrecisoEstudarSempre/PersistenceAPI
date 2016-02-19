@@ -1,7 +1,8 @@
-package br.com.persistenceapi.core;
+package br.com.persistenceapi.core.datasource;
 
 import br.com.persistenceapi.core.exception.EmptyPoolException;
 import br.com.persistenceapi.core.exception.PoolCreationException;
+import br.com.persistenceapi.core.pool.JDBCConnectionPool;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,7 +15,7 @@ import java.sql.SQLException;
 public class DataSource {
 
     /*instância do pool*/
-    private final JDBCConnectionPool pool;
+    private JDBCConnectionPool pool;
 
     /**
      * Construtor da classe DataSource. Inicializa o pool de conexões.     

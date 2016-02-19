@@ -1,7 +1,7 @@
 package dao;
 
-import br.com.persistenceapi.core.GenericDAO;
-import br.com.persistenceapi.core.RowMapping;
+import br.com.persistenceapi.core.dao.RowMapping;
+import br.com.persistenceapi.core.dao.GenericDAO;
 import br.com.persistenceapi.core.exception.EmptyPoolException;
 import br.com.persistenceapi.core.exception.EmptyResultSetException;
 import br.com.persistenceapi.core.exception.MoreThanOneResultException;
@@ -19,7 +19,7 @@ import java.util.List;
  */
 public class FuncionarioDAO extends GenericDAO<Funcionario>{
 
-    public void insert(Funcionario funcionario){
+    public void insert(Funcionario funcionario) throws IntegrationException, BusinessException{
         String sql = "INSERT INTO funcionario ("
                 + "NM_FUNCIONARIO, "
                 + "EM_FUNCIONARIO,"
@@ -37,10 +37,16 @@ public class FuncionarioDAO extends GenericDAO<Funcionario>{
         parametros.add(funcionario.getLogradouro());
         parametros.add(funcionario.getNumero());
         parametros.add(funcionario.getBairro());
-        super.insertUpdateDelete(sql, parametros);
+        try {
+            super.insertUpdateDelete(sql, parametros);
+        } catch (EmptyPoolException ex) {
+            throw new IntegrationException("Erro de integração com a base de dados.", ex);
+        } catch (SQLException ex) {
+            throw new BusinessException("Verifique a operação SQL.", ex);
+        }
     }
     
-    public void update(Funcionario funcionario){
+    public void update(Funcionario funcionario) throws IntegrationException, BusinessException{
         String sql = "UPDATE FUNCIONARIO SET "
                 + "NM_FUNCIONARIO = ?, "
                 + "EM_FUNCIONARIO = ?,"
@@ -59,14 +65,26 @@ public class FuncionarioDAO extends GenericDAO<Funcionario>{
         parametros.add(funcionario.getNumero());
         parametros.add(funcionario.getBairro());
         parametros.add(funcionario.getId());
-        super.insertUpdateDelete(sql, parametros);
+        try {
+            super.insertUpdateDelete(sql, parametros);
+        } catch (EmptyPoolException ex) {
+            throw new IntegrationException("Erro de integração com a base de dados.", ex);
+        } catch (SQLException ex) {
+            throw new BusinessException("Verifique a operação SQL.", ex);
+        }
     }
     
-    public void delete(Long id){
+    public void delete(Long id) throws IntegrationException, BusinessException{
         String sql = "DELETE FROM FUNCIONARIO WHERE ID = ?";
         List<Object> parametros = new ArrayList<>();
         parametros.add(id);
-        super.insertUpdateDelete(sql, parametros);
+        try {
+            super.insertUpdateDelete(sql, parametros);
+        } catch (EmptyPoolException ex) {
+            throw new IntegrationException("Erro de integração com a base de dados.", ex);  
+        } catch (SQLException ex) {
+            throw new BusinessException("Verifique a operação SQL.", ex);
+        }
     }
     
     public List<Funcionario> findAll() throws IntegrationException, BusinessException{

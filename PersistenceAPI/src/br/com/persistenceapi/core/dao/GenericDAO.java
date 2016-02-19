@@ -1,5 +1,6 @@
-package br.com.persistenceapi.core;
+package br.com.persistenceapi.core.dao;
 
+import br.com.persistenceapi.core.datasource.DataSource;
 import br.com.persistenceapi.core.exception.EmptyPoolException;
 import br.com.persistenceapi.core.exception.EmptyResultSetException;
 import br.com.persistenceapi.core.exception.MoreThanOneResultException;
@@ -51,7 +52,7 @@ public class GenericDAO<T>{
         } catch (EmptyPoolException ex) {
             throw ex;
         } finally {
-            this.closeConnection(connection, preparedStatement);
+            dataSource.closeConnection(connection, preparedStatement);
         }
     }
     
@@ -104,7 +105,7 @@ public class GenericDAO<T>{
         } catch (SQLException | EmptyPoolException ex) {
             throw ex;
         } finally {
-            this.closeConnection(connection, preparedStatement, resultSet);
+            dataSource.closeConnection(connection, preparedStatement, resultSet);
         }
         return rows;
     }
@@ -144,7 +145,7 @@ public class GenericDAO<T>{
         } catch (SQLException | EmptyPoolException ex) {
             throw ex;
         } finally {
-            this.closeConnection(connection, preparedStatement, resultSet);
+            dataSource.closeConnection(connection, preparedStatement, resultSet);
         }
         return row;
     }

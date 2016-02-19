@@ -1,4 +1,4 @@
-package br.com.persistenceapi.core;
+package br.com.persistenceapi.core.dao;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

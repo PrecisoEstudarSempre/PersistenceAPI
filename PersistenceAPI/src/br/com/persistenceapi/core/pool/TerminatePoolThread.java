@@ -1,4 +1,4 @@
-package br.com.persistenceapi.core;
+package br.com.persistenceapi.core.pool;
 
 /**
  * Thread usada para a liberação das conexões do pool. É necessário utilizar uma thread para a realizar a liberação pois, 

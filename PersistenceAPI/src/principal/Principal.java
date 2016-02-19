@@ -29,7 +29,7 @@ public class Principal {
         System.out.println(principal.encontrarFuncionario().getNome());;
     }
     
-    private void inserirFuncionarios(){
+    private void inserirFuncionarios() throws IntegrationException, BusinessException{
         Funcionario funcionario1 = new Funcionario();
         Funcionario funcionario2 = new Funcionario();
         Funcionario funcionario3 = new Funcionario();
@@ -73,7 +73,7 @@ public class Principal {
         System.out.println("Dados inseridos com sucesso.");
     }
 
-    private List<Funcionario> listarFuncionarios(){
+    private List<Funcionario> listarFuncionarios() throws IntegrationException, BusinessException{
         return new FuncionarioDAO().findAll();
     }
     
