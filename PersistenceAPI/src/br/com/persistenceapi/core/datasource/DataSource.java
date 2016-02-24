@@ -47,7 +47,7 @@ public class DataSource {
     }
     
     /**
-     * Reliza o encerramento do statement atrelado à conexão e devolve a conexão ao pool.
+     * Realiza o encerramento do statement atrelado à conexão e devolve a conexão ao pool.
      * @param connection Representa a conexão.
      * @param preparedStatement Representa o statement.
      */
@@ -63,7 +63,7 @@ public class DataSource {
     }
     
     /**
-     * Reliza o encerramento do result set, statement e devolve a conexão ao pool.
+     * Realiza o encerramento do result set, statement e devolve a conexão ao pool.
      * @param connection Representa a conexão.
      * @param preparedStatement Representa o statement.
      * @param resultSet Representa o result set.
