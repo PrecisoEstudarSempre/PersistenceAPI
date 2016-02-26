@@ -1,0 +1,4 @@
+br.com.persistenceapi.core.dao
+br.com.persistenceapi.core.datasource
+br.com.persistenceapi.core.exception
+br.com.persistenceapi.core.pool
