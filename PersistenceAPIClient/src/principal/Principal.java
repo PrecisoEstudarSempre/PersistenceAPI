@@ -14,7 +14,7 @@ import java.util.List;
 public class Principal {
     public static void main(String[] args) throws IntegrationException, BusinessException {
         Principal principal = new Principal();
-//        principal.inserirFuncionarios();
+        principal.inserirFuncionarios();
         
         System.out.print("\n");
         System.out.print("\n");
